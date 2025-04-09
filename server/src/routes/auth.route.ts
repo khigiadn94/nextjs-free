@@ -127,7 +127,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
             domain: envConfig.DOMAIN
           })
           .send({
-            message: 'Đăng nhập thành công',
+            message: 'Login Successfully',
             data: {
               token: session.token,
               expiresAt: session.expiresAt.toISOString(),
@@ -136,7 +136,7 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
           })
       } else {
         reply.send({
-          message: 'Đăng nhập thành công',
+          message: 'Login Successfully',
           data: {
             token: session.token,
             expiresAt: session.expiresAt.toISOString(),
