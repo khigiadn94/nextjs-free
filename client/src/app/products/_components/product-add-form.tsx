@@ -65,10 +65,41 @@ const ProductAddForm = ({ product }: { product?: Product }) => {
       setLoading(false);
     }
   };
+  const updateProduct = async (_values: UpdateProductBodyType) => {
+    if (!product) return;
+    setLoading(true);
+    let values = _values;
+    try {
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file as Blob);
+        const uploadImageResult = await productApiRequest.uploadImage(formData);
+        const imageUrl = uploadImageResult.payload.data;
+        values = {
+          ...values,
+          image: imageUrl,
+        };
+      }
+      const result = await productApiRequest.update(product.id, values);
+      toast.success(result.payload.message);
+      router.refresh();
+    } catch (error: any) {
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   async function onSubmit(values: CreateProductBodyType) {
     if (loading) return;
-    await createProduct(values);
+    if (!product) {
+      await createProduct(values);
+    } else {
+      await updateProduct(values);
+    }
   }
   return (
     <Form {...form}>
@@ -164,12 +195,12 @@ const ProductAddForm = ({ product }: { product?: Product }) => {
                 }
               }}
             >
-              Xóa hình ảnh
+              Delete Image
             </Button>
           </div>
         )}
         <Button type="submit" className="!mt-8 w-full">
-          {product ? "Cập nhật sản phẩm" : "Thêm sản phẩm"}
+          {product ? "Update Product" : "Add Product"}
         </Button>
       </form>
     </Form>
