@@ -66,42 +66,9 @@ const ProductAddForm = ({ product }: { product?: Product }) => {
     }
   };
 
-  const updateProduct = async (_values: UpdateProductBodyType) => {
-    if (!product) return;
-    setLoading(true);
-    let values = _values;
-    try {
-      if (file) {
-        const formData = new FormData();
-        formData.append("file", file as Blob);
-        const uploadImageResult = await productApiRequest.uploadImage(formData);
-        const imageUrl = uploadImageResult.payload.data;
-        values = {
-          ...values,
-          image: imageUrl,
-        };
-      }
-
-      const result = await productApiRequest.update(product.id, values);
-
-      toast.success(result.payload.message);
-      router.refresh();
-    } catch (error: any) {
-      handleErrorApi({
-        error,
-        setError: form.setError,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
   async function onSubmit(values: CreateProductBodyType) {
     if (loading) return;
-    if (product) {
-      await updateProduct(values);
-    } else {
-      await createProduct(values);
-    }
+    await createProduct(values);
   }
   return (
     <Form {...form}>

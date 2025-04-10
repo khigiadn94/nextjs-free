@@ -1,5 +1,34 @@
+import productApiRequest from "@/apiRequests/product";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import React from "react";
 
-export default function ProductListPage() {
-  return <div>Product List Page</div>;
+export default async function ProductListPage() {
+  const { payload } = await productApiRequest.getList();
+  const productList = payload.data;
+  console.log(productList);
+  return (
+    <div>
+      <h1>Product List</h1>
+      <div className="space-y-4">
+        {productList.map((product) => (
+          <div key={product.id} className="flex space-x-4">
+            <Image
+              src={product.image}
+              alt={product.name}
+              width={180}
+              height={180}
+              className="w-32 h-32 object-cover "
+            />
+            <h3>{product.name}</h3>
+            <div>{product.price}</div>
+            <div className="flex space-x-2">
+              <Button variant={"outline"}> Edit</Button>
+              <Button variant={"destructive"}> Delete</Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
