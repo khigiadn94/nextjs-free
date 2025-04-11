@@ -1,39 +1,76 @@
 import productApiRequest from "@/apiRequests/product";
 import Image from "next/image";
-import React from "react";
+import React, { cache } from "react";
+import type { Metadata, ResolvingMetadata } from "next";
 
-export default async function ProductDetail({
-  params,
-}: {
+const getDetaiPage = cache(productApiRequest.getDetail);
+
+type Props = {
   params: { id: string };
-}) {
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // Need to await the params.id since it's a promise
+  const { id } = await params;
+  const { payload } = await getDetaiPage(Number(id));
+  const product = payload.data;
+
+  return {
+    title: `View details for ${product.name}`,
+    description: `Description: ${product.description}`,
+    openGraph: {
+      title: product.name,
+      description: `Description: ${product.name}`,
+      images: [
+        {
+          url: product.image,
+          width: 400,
+          height: 400,
+          alt: product.name,
+        },
+      ],
+    },
+  };
+}
+
+export default async function ProductDetail({ params, searchParams }: Props) {
   const resolvedParams = await params;
   let product = null;
   try {
-    const { payload } = await productApiRequest.getDetail(
-      Number(resolvedParams.id)
-    );
+    const { payload } = await getDetaiPage(Number(resolvedParams.id));
     product = payload.data;
   } catch (error) {}
   return (
-    <div>
-      <>
-        {!product && <div>No Product Found!</div>}
-        {product && (
-          <div>
+    <main className="container mx-auto px-4 py-8">
+      {!product && (
+        <div className="text-center text-2xl text-gray-600">
+          No Product Found!
+        </div>
+      )}
+      {product && (
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="relative">
             <Image
               src={product.image}
               alt={product.name}
-              width={180}
-              height={180}
-              className="w-32 h-32 object-cover "
+              width={400}
+              height={400}
+              className="rounded-lg shadow-lg object-cover"
+              priority
             />
-
-            <h3>{product.name}</h3>
-            <div>{product.price}</div>
           </div>
-        )}
-      </>
-    </div>
+          <div className="flex flex-col gap-4">
+            <h1 className="text-3xl font-bold">{product.name}</h1>
+            <div className="text-2xl font-semibold text-blue-600">
+              ${product.price.toLocaleString()}
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }
