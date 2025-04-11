@@ -1,14 +1,14 @@
 import productApiRequest from "@/apiRequests/product";
-import ProductAddForm from "@/app/products/_components/product-add-form";
+import Image from "next/image";
 import React from "react";
 
-export default async function ProductEdit({
+export default async function ProductDetail({
   params,
 }: {
   params: { id: string };
 }) {
   const resolvedParams = await params;
-  let product = undefined;
+  let product = null;
   try {
     const { payload } = await productApiRequest.getDetail(
       Number(resolvedParams.id)
@@ -17,8 +17,23 @@ export default async function ProductEdit({
   } catch (error) {}
   return (
     <div>
-      {!product && <div>No Product Found!</div>}
-      {product && <ProductAddForm product={product} />}
+      <>
+        {!product && <div>No Product Found!</div>}
+        {product && (
+          <div>
+            <Image
+              src={product.image}
+              alt={product.name}
+              width={180}
+              height={180}
+              className="w-32 h-32 object-cover "
+            />
+
+            <h3>{product.name}</h3>
+            <div>{product.price}</div>
+          </div>
+        )}
+      </>
     </div>
   );
 }
