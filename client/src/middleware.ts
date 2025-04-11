@@ -10,14 +10,16 @@ export function middleware(request: NextRequest) {
   console.log("!!!", request);
   const { pathname } = request.nextUrl;
   const sessionToken = request.cookies.get("sessionToken")?.value;
-  // Chưa đăng nhập thì không cho vào private paths
   const isPrivatePath = privatePaths.some((path) => pathname.startsWith(path));
+  const isAuthPath = authPaths.some((path) => pathname.startsWith(path));
+
+  // Chưa đăng nhập thì không cho vào private paths
   if ((isPrivatePath || productEditRegex.test(pathname)) && !sessionToken) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Đăng nhập rồi thì không cho vào login/register nữa
-  if (authPaths.some((path) => pathname.startsWith(path)) && sessionToken) {
+  if (isAuthPath && sessionToken) {
     return NextResponse.redirect(new URL("/me", request.url));
   }
 
