@@ -1,24 +1,21 @@
-"use client";
-import { useAppContext } from "@/app/app-provider";
+import { User } from "@/app/app-provider";
 import ButtonLogout from "@/components/button-logout";
 import { ModeToggle } from "@/components/mode-toggle";
 import Link from "next/link";
 
-export default function Header() {
-  const { user } = useAppContext();
+export default async function Header({ user }: { user: User }) {
   return (
-    <div className="flex space-x-4">
+    <div>
       <ul className="flex space-x-4">
         <li>
           <Link href="/products">Product</Link>
         </li>
-
         {user ? (
           <>
             <li>
-              <Link href={"/me"}>
+              <div>
                 Greeding! <strong>{user.name}</strong>
-              </Link>
+              </div>
             </li>
             <li>
               <ButtonLogout />

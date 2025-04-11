@@ -1,64 +1,25 @@
-'use client'
-import { isClient } from '@/lib/http'
-import { AccountResType } from '@/schemaValidations/account.schema'
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+"use client";
+import { clientSessionToken } from "@/lib/http";
+import { AccountResType } from "@/schemaValidations/account.schema";
+import { useState } from "react";
 
-type User = AccountResType['data']
+export type User = AccountResType["data"] | null;
 
-const AppContext = createContext<{
-  user: User | null
-  setUser: (user: User | null) => void
-  isAuthenticated: boolean
-}>({
-  user: null,
-  setUser: () => {},
-  isAuthenticated: false
-})
-export const useAppContext = () => {
-  const context = useContext(AppContext)
-  return context
-}
 export default function AppProvider({
-  children
+  children,
+  inititalSessionToken = "",
+  user,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
+  inititalSessionToken?: string;
+  user: User;
 }) {
-  const [user, setUserState] = useState<User | null>(() => {
-    // if (isClient()) {
-    //   const _user = localStorage.getItem('user')
-    //   return _user ? JSON.parse(_user) : null
-    // }
-    return null
-  })
-  const isAuthenticated = Boolean(user)
-  const setUser = useCallback(
-    (user: User | null) => {
-      setUserState(user)
-      localStorage.setItem('user', JSON.stringify(user))
-    },
-    [setUserState]
-  )
+  console.log(user);
+  useState(() => {
+    if (typeof window !== "undefined") {
+      clientSessionToken.value = inititalSessionToken;
+    }
+  });
 
-  useEffect(() => {
-    const _user = localStorage.getItem('user')
-    setUserState(_user ? JSON.parse(_user) : null)
-  }, [setUserState])
-
-  return (
-    <AppContext.Provider
-      value={{
-        user,
-        setUser,
-        isAuthenticated
-      }}
-    >
-      {children}
-    </AppContext.Provider>
-  )
+  return <>{children}</>;
 }
