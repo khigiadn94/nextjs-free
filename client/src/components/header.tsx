@@ -13,9 +13,9 @@ export default async function Header({ user }: { user: User }) {
         {user ? (
           <>
             <li>
-              <div>
+              <Link href={"/me"}>
                 Greeding! <strong>{user.name}</strong>
-              </div>
+              </Link>
             </li>
             <li>
               <ButtonLogout />

@@ -38,8 +38,8 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header user={user} />
           <AppProvider inititalSessionToken={sessionToken?.value} user={user}>
+            <Header user={user} />
             {children}
             <SlideSession />
           </AppProvider>
