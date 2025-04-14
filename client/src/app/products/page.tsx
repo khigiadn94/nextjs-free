@@ -1,5 +1,7 @@
 import productApiRequest from "@/apiRequests/product";
 import DeleteProduct from "@/app/products/_components/delete-product";
+import ProductAddButton from "@/app/products/_components/product-add-button";
+import ProductEditButton from "@/app/products/_components/product-edit-button";
 import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -13,19 +15,12 @@ export const metadata: Metadata = {
 };
 
 export default async function ProductListPage() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("sessionToken");
-  const isAuthenticated = Boolean(sessionToken);
   const { payload } = await productApiRequest.getList();
   const productList = payload.data;
   return (
     <div>
       <h1>Product List</h1>
-      {isAuthenticated && (
-        <Link href={"/products/add"}>
-          <Button variant={"secondary"}>Add Product</Button>
-        </Link>
-      )}
+      <ProductAddButton />
 
       <div className="space-y-4">
         {productList.map((product, index) => (
@@ -43,14 +38,7 @@ export default async function ProductListPage() {
 
             <h3>{product.name}</h3>
             <div>{product.price}</div>
-            {isAuthenticated && (
-              <div className="flex space-x-2">
-                <Link href={`/products/${product.id}/edit`}>
-                  <Button variant={"outline"}> Edit</Button>
-                </Link>
-                <DeleteProduct product={product} />
-              </div>
-            )}
+            <ProductEditButton product={product} />
           </div>
         ))}
       </div>

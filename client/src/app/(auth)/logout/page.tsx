@@ -1,6 +1,7 @@
 "use client";
 
 import authApiRequest from "@/apiRequests/auth";
+import { useAppContext } from "@/app/app-provider";
 import { MessageResType } from "@/schemaValidations/common.schema";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
@@ -13,6 +14,7 @@ type LogoutResponse = {
 function LogoutLogic() {
   const router = useRouter();
   const pathname = usePathname();
+  const { setUser } = useAppContext();
   const searchParams = useSearchParams();
   const sessionToken = searchParams.get("sessionToken");
   useEffect(() => {
@@ -22,6 +24,7 @@ function LogoutLogic() {
       authApiRequest
         .logoutFromNextClientToNextServer(true, signal)
         .then((res: LogoutResponse) => {
+          setUser(null);
           localStorage.removeItem("sessionToken");
           localStorage.removeItem("sessionTokenExpiresAt");
           router.push(`/login?redirectFrom=${pathname}`);
@@ -30,7 +33,7 @@ function LogoutLogic() {
     return () => {
       controller.abort();
     };
-  }, [sessionToken, router, pathname]);
+  }, [sessionToken, router, pathname, setUser]);
   return <div>page</div>;
 }
 

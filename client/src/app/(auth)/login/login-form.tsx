@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,9 +18,11 @@ import authApiRequest from "@/apiRequests/auth";
 import { useRouter } from "next/navigation";
 import { handleErrorApi } from "@/lib/utils";
 import { useState } from "react";
+import { useAppContext } from "@/app/app-provider";
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
+  const { setUser } = useAppContext();
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<LoginBodyType>({
@@ -45,6 +47,7 @@ const LoginForm = () => {
       toast({
         description: result.payload.message,
       });
+      setUser(result.payload.data.account);
       router.push("/");
       router.refresh();
     } catch (error: any) {

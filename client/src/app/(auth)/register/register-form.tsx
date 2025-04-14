@@ -49,6 +49,7 @@ const RegisterForm = () => {
         sessionToken: result.payload.data.token,
         expiresAt: result.payload.data.expiresAt,
       });
+      setUser(result.payload.data.account);
       toast.success(result.payload.message);
       setUser(result.payload.data.account);
 

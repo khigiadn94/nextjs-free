@@ -1,15 +1,12 @@
+import AppProvider from "@/app/app-provider";
+import { baseOpenGraph } from "@/app/shared-metadata";
+import Header from "@/components/header";
+import SlideSession from "@/components/slide-session";
+import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
-import "./globals.css";
-import Header from "@/components/header";
-import AppProvider from "@/app/app-provider";
-import { cookies } from "next/headers";
-import SlideSession from "@/components/slide-session";
-import accountApiRequest from "@/apiRequests/account";
 import { Toaster } from "sonner";
-import { baseOpenGraph } from "@/app/shared-metadata";
-import { AccountResType } from "@/schemaValidations/account.schema";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["vietnamese"] });
 
@@ -27,8 +24,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let user: AccountResType["data"] | null = null;
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className}`}>
@@ -39,8 +34,8 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppProvider user={user}>
-            <Header user={user} />
+          <AppProvider>
+            <Header />
             {children}
             <Toaster richColors />
             <SlideSession />
