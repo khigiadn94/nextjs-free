@@ -1,24 +1,22 @@
 import productApiRequest from "@/apiRequests/product";
 import ProductAddForm from "@/app/products/_components/product-add-form";
-import React, { cache } from "react";
-import type { Metadata, ResolvingMetadata } from "next";
+import { Metadata, ResolvingMetadata } from "next";
+import { cache } from "react";
 
-const getDetaiPage = cache(productApiRequest.getDetail);
+const getDetail = cache(productApiRequest.getDetail);
 
 type Props = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata(
-  { params, searchParams }: Props,
+  props: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // read route params
-  const { id } = await params;
-  const { payload } = await getDetaiPage(Number(id));
+  const params = await props.params;
+  const { payload } = await getDetail(Number(params.id));
   const product = payload.data;
-
   return {
     title: `Edit product: ${product.name}`,
     description: `Description: ${product.description}`,
@@ -37,13 +35,14 @@ export async function generateMetadata(
   };
 }
 
-export default async function ProductEdit({ params, searchParams }: Props) {
-  const resolvedParams = await params;
+export default async function ProductEdit(props: Props) {
+  const params = await props.params;
   let product = null;
   try {
-    const { payload } = await getDetaiPage(Number(resolvedParams.id));
+    const { payload } = await getDetail(Number(params.id));
     product = payload.data;
   } catch (error) {}
+
   return (
     <div>
       {!product && <div>No Product Found!</div>}

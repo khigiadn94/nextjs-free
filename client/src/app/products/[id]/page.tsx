@@ -1,30 +1,30 @@
 import productApiRequest from "@/apiRequests/product";
 import Image from "next/image";
-import React, { cache } from "react";
-import type { Metadata, ResolvingMetadata } from "next";
+import { Metadata, ResolvingMetadata } from "next";
+import { cache } from "react";
+import envConfig from "@/config";
 import { baseOpenGraph } from "@/app/shared-metadata";
 
-const getDetaiPage = cache(productApiRequest.getDetail);
+const getDetail = cache(productApiRequest.getDetail);
 
 type Props = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata(
-  { params }: Props,
+  props: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // Need to await the params.id since it's a promise
-  const { id } = await params;
-  const { payload } = await getDetaiPage(Number(id));
+  const params = await props.params;
+  const { payload } = await getDetail(Number(params.id));
   const product = payload.data;
-  const url = process.env.NEXT_PUBLIC_URL + "/products/" + product.id;
-
+  const url = envConfig.NEXT_PUBLIC_URL + "/products/" + product.id;
   return {
     title: product.name,
     description: product.description,
     openGraph: {
+      ...baseOpenGraph,
       title: product.name,
       description: product.description,
       url,
@@ -33,7 +33,6 @@ export async function generateMetadata(
           url: product.image,
         },
       ],
-      ...baseOpenGraph,
     },
     alternates: {
       canonical: url,
@@ -41,13 +40,14 @@ export async function generateMetadata(
   };
 }
 
-export default async function ProductDetail({ params, searchParams }: Props) {
-  const resolvedParams = await params;
+export default async function ProductDetail(props: Props) {
+  const params = await props.params;
   let product = null;
   try {
-    const { payload } = await getDetaiPage(Number(resolvedParams.id));
+    const { payload } = await getDetail(Number(params.id));
     product = payload.data;
   } catch (error) {}
+
   return (
     <main className="container mx-auto px-4 py-8">
       {!product && (

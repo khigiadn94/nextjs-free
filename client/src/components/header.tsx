@@ -10,6 +10,9 @@ export default async function Header({ user }: { user: User }) {
         <li>
           <Link href="/products">Product</Link>
         </li>
+        <li>
+          <ButtonLogout />
+        </li>
         {user ? (
           <>
             <li>

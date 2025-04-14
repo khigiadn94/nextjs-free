@@ -20,12 +20,14 @@ export default function ButtonLogout() {
         router.push(`/login?redirectFrom=${pathname}`);
       });
     } finally {
+      localStorage.removeItem("sessionToken");
+      localStorage.removeItem("sessionTokenExpiresAt");
       router.refresh();
     }
   };
   return (
     <Button size={"sm"} onClick={handleLogout}>
-      Đăng xuất
+      Logout
     </Button>
   );
 }

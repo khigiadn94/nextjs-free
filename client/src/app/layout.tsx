@@ -9,6 +9,7 @@ import SlideSession from "@/components/slide-session";
 import accountApiRequest from "@/apiRequests/account";
 import { Toaster } from "sonner";
 import { baseOpenGraph } from "@/app/shared-metadata";
+import { AccountResType } from "@/schemaValidations/account.schema";
 
 const inter = Inter({ subsets: ["vietnamese"] });
 
@@ -26,13 +27,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("sessionToken");
-  let user = null;
-  if (sessionToken) {
-    const data = await accountApiRequest.me(sessionToken.value);
-    user = data.payload.data;
-  }
+  let user: AccountResType["data"] | null = null;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className}`}>
@@ -43,7 +39,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppProvider inititalSessionToken={sessionToken?.value} user={user}>
+          <AppProvider user={user}>
             <Header user={user} />
             {children}
             <Toaster richColors />
