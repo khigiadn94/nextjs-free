@@ -2,6 +2,7 @@ import productApiRequest from "@/apiRequests/product";
 import Image from "next/image";
 import React, { cache } from "react";
 import type { Metadata, ResolvingMetadata } from "next";
+import { baseOpenGraph } from "@/app/shared-metadata";
 
 const getDetaiPage = cache(productApiRequest.getDetail);
 
@@ -18,21 +19,24 @@ export async function generateMetadata(
   const { id } = await params;
   const { payload } = await getDetaiPage(Number(id));
   const product = payload.data;
+  const url = process.env.NEXT_PUBLIC_URL + "/products/" + product.id;
 
   return {
-    title: `View details for ${product.name}`,
-    description: `Description: ${product.description}`,
+    title: product.name,
+    description: product.description,
     openGraph: {
       title: product.name,
-      description: `Description: ${product.name}`,
+      description: product.description,
+      url,
       images: [
         {
           url: product.image,
-          width: 400,
-          height: 400,
-          alt: product.name,
         },
       ],
+      ...baseOpenGraph,
+    },
+    alternates: {
+      canonical: url,
     },
   };
 }

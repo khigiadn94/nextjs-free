@@ -1,5 +1,5 @@
 export const baseOpenGraph = {
-  locale: 'en_US',
-  type: 'website',
-  siteName: 'Productic Company'
-}
+  locale: "en_US",
+  type: "website",
+  siteName: "Haluhak Company",
+};

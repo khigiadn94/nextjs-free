@@ -8,6 +8,7 @@ import { cookies } from "next/headers";
 import SlideSession from "@/components/slide-session";
 import accountApiRequest from "@/apiRequests/account";
 import { Toaster } from "sonner";
+import { baseOpenGraph } from "@/app/shared-metadata";
 
 const inter = Inter({ subsets: ["vietnamese"] });
 
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
     default: "Monkey",
   },
   description: "Haluhak Fuck You",
+  openGraph: baseOpenGraph,
 };
 
 export default async function RootLayout({
